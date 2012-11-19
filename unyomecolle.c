@@ -1,6 +1,15 @@
 #include <stdio.h>
+#include <dirent.h>
+#include <sys/stat.h>
+
 #define BUFLEN 65536
-char cbuf[BUFLEN]
+char cbuf[BUFLEN];
+
+int sfilemode(const char *path){
+	struct stat st;
+	stat(path,&st);
+	return st.st_mode;
+}
 
 #define Between(n1, x, n2) (((n1)<=(x))&&((x)<=(n2)))
 #define jms1(c) (Between(0x81,(unsigned char)(c),0x9f)||Between(0xe0,(unsigned char)(c),0xfc))
@@ -70,7 +79,7 @@ static int recursive(
 	return 0;
 }
 
-int unyomecolle(const int argc, const char **argv){
+int main(const int argc, const char **argv){
 	char *sourced=cbuf+2048,*targetd=cbuf+3072;
 
 	if(argc<3){fprintf(stderr,"unyomecolle source-dir/ target-dir/\n");return -1;}
