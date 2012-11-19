@@ -5,8 +5,9 @@
 #server number
 export number=12
 
-#check using WireShark maybe?
+#check using password recovery screen
 export userId=0000
+#use getyomecolleuid
 export uid=abcdef
 
 wget -O $1.zip -U YomeColle "https://anime.biglobe.ne.jp/api/yome/$number/download/getYomeData.php?userId=$userId&yomeId=$1&uid=$uid&terminalKind=2"
