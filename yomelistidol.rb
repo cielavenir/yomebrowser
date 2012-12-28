@@ -2,7 +2,7 @@
 #YomeBrowser Lister
 
 #server number
-NUMBER=21
+NUMBER=1
 #1=iPhone 2=Android
 TERMINALKIND=2
 
@@ -31,7 +31,7 @@ case SAX
 end
 
 body=''
-https = Net::HTTP.new('anime.biglobe.ne.jp',443)
+https = Net::HTTP.new('idol.anime.biglobe.ne.jp',443)
 https.use_ssl = true
 https.start{
 	https.request_get("/api/yome/#{NUMBER}/firstRun/getYomeList.php?terminalKind=#{TERMINALKIND}",{
@@ -87,8 +87,8 @@ case SAX
 	when 1 then parser=REXML::Parsers::SAX2Parser.new(body);parser.listen(listener);parser.parse
 	when 2 then parser=LibXML::XML::SaxParser.string(body);parser.callbacks=listener;parser.parse
 end
-yomeList=listener.content['yomeId'].map(&:to_i).zip(listener.content['name'],listener.content['actorName'],listener.content['titleName'])
+yomeList=listener.content['yomeId'].map(&:to_i).zip(listener.content['name'],listener.content['titleName'])
 yomeList.sort_by{|e|e[0]}.each{|e|
-	puts "#{e[0]}\t#{e[1]}\t(CV:#{e[2]})\t[#{e[3]}]"
+	puts "#{e[0]}\t#{e[1]}\t[#{e[2]}]"
 }
 

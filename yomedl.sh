@@ -3,14 +3,18 @@
 #sh yomedl.sh N
 
 #server number
-export number=12
+export number=21
+#1=iPhone 2=Android
+export terminalKind=2
 
 #check using password recovery screen
 export userId=0000
-#use getyomecolleuid
+#iPhone: packet dump
+#Android: use getyomecolleuid
 export uid=abcdef
 
 wget -O $1.zip -U YomeColle "https://anime.biglobe.ne.jp/api/yome/$number/download/getYomeData.php?userId=$userId&yomeId=$1&uid=$uid&terminalKind=2"
 sleep 3
 wget -O - -U YomeColle --post-data "userId=$userId&yomeId=$1&uid=$uid&terminalKind=2" "http://anime.biglobe.ne.jp/api/yome/$number/user/deleteYomeInfo.php"
 sleep 2
+
