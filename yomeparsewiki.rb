@@ -173,7 +173,7 @@ cardList.each_with_index{|e,i|
 			cond=' (愛情度'+levels[str]+'で開放)'
 		end
 	end
-	puts %Q(**No.#{i+1} #{e[1]} #{cond})
+	puts %Q(**No.#{i+1} #{e[1]}#{cond})
 	#puts %Q(#image(http://www51.atwiki.jp/yomecolle/?cmd=upload&act=open&page=#{CGI.escape(listener.content['name'])}&file=#{ID}#{sprintf("%02d",i+1)}.jpg))
 	puts %Q(#image(#{ID}#{sprintf("%02d",i+1)}.jpg))
 	puts "|ボイス|CENTER:セリフ|"
