@@ -44,6 +44,8 @@ https.start{
 	}
 }
 
+open(File.dirname(__FILE__)+'/yomelist.xml','wb'){|f|f.puts body}
+
 class YomeListener
 	case SAX
 		when 0 then include REXML::StreamListener

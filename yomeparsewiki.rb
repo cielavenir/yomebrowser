@@ -4,7 +4,7 @@
 #ruby yomeparse.rb < conf/yome_data_N.xml > N.html
 
 require 'cgi'
-ID='yutori'
+ID='loeb'
 
 SAX=2
 case SAX
@@ -81,6 +81,9 @@ class YomeListener
 		if @current_tag[0..2]==['yomeRoot','cardList','cardInfo'] && ['cardId','cardName','file','gachaId','level'].find{|e|e==@current_tag[3]}
 			@content['card-'+@current_tag[3]]<<text
 		end
+		if @current_tag[0..3]==['yomeRoot','cardList','cardInfo','changeImg'] && ['file'].find{|e|e==@current_tag[4]}
+			@content['cardchg-'+@current_tag[4]]<<text
+		end
 		if @current_tag[0..2]==['yomeRoot','voiceList','voiceInfo'] && ['voiceId','voiceFile','text','cardId'].find{|e|e==@current_tag[3]}
 			@content['voice-'+@current_tag[3]]<<text
 		end
@@ -109,6 +112,9 @@ class YomeListener
 			str='reactionText' if str=='talkText'
 			@content['item-'+str]<<text
 		end
+		if @current_tag[0..2]==['yomeRoot','storyList','storyInfo'] && ['cardId','text'].find{|e|e==@current_tag[3]}
+			@content['story-'+@current_tag[3]]<<text
+		end
 	end
 	alias_method :on_cdata_block, :cdata
 	def text(text)
@@ -128,6 +134,7 @@ end
 
 gachas=Hash[*listener.content['gacha-gachaId'].zip(listener.content['gacha-gachaName']).flatten]
 itemList=listener.content['item-itemId'].zip(listener.content['item-reactionText'])
+storyList=Hash[*listener.content['item-itemId'].zip(listener.content['item-reactionText']).flatten]
 voiceList=listener.content['voice-voiceId'].map(&:to_i).zip(listener.content['voice-voiceFile'],listener.content['voice-text'],listener.content['voice-cardId'].map(&:to_i))
 voiceList2=Hash.new{|h,k|h[k]=[]}
 voiceList.sort_by{|e|e[0]}.each{|e|
@@ -138,7 +145,7 @@ cardList=listener.content['card-cardId'].map(&:to_i).zip(listener.content['card-
 listener.actionList.each{|k,v|
 	puts "**#{k}"
 	#if listener.actionVoiceList[k].length==0
-		puts v.uniq.join("\n")
+		puts '|「'+v.uniq.join("」|\n|「")+'」|'
 	#end
 	puts
 }
@@ -146,8 +153,8 @@ listener.actionList.each{|k,v|
 puts '**イベントアイテム・記念日'
 itemList.sort_by{|e|e[0]}.each{|e|
 	item=items[e[0]]
-	item=['',''] if !item
-	puts '|'+(item+[e[1]]).join('|')+"|\n"
+	item=[e[0],''] if !item
+	puts '|'+item.join('|')+'|「'+e[1]+"」|\n"
 }
 
 print <<EOM
@@ -167,7 +174,8 @@ cardList.each_with_index{|e,i|
 		end
 	end
 	puts %Q(**No.#{i+1} #{e[1]} #{cond})
-	puts %Q(#image(http://www51.atwiki.jp/yomecolle/?cmd=upload&act=open&page=#{CGI.escape(listener.content['name'])}&file=#{ID}#{sprintf("%02d",i+1)}.jpg))
+	#puts %Q(#image(http://www51.atwiki.jp/yomecolle/?cmd=upload&act=open&page=#{CGI.escape(listener.content['name'])}&file=#{ID}#{sprintf("%02d",i+1)}.jpg))
+	puts %Q(#image(#{ID}#{sprintf("%02d",i+1)}.jpg))
 	puts "|ボイス|CENTER:セリフ|"
 	voiceList2[e[0]].each_with_index{|e0,j|
 		puts "|CENTER:#{j+1}|「#{e0[2]}」|"
