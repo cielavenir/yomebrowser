@@ -29,12 +29,20 @@ case SAX
 end
 
 levels={}
-open('dec/conf/level.csv'){|f|
+open(File.dirname(__FILE__)+'/level.csv'){|f|
 	f.each_line{|line|
-		a=line.split(',')
+		a=line.chomp.split(',')
 		levels[a[0]]=a[2]
 	}
 }
+items={}
+open(File.dirname(__FILE__)+'/itemlist.csv'){|f|
+	f.each_line{|line|
+		a=line.chomp.split(',')
+		items[a[0]]=[a[1],a[2]]
+	}
+}
+
 gachas={}
 
 body=ARGF.read
@@ -49,9 +57,12 @@ class YomeListener
 	def initialize
 		super
 		@content=Hash.new{|h,k|h[k]=[]}
+		@actionList=Hash.new{|h,k|h[k]=[]}
+		@actionVoiceList=Hash.new{|h,k|h[k]=[]}
 		@current_tag=[]
+		@current_action=''
 	end
-	attr_reader :content
+	attr_reader :content, :actionList, :actionVoiceList
 
 	def tag_start(tag,attrs)
 		@current_tag.push(tag)
@@ -76,6 +87,28 @@ class YomeListener
 		if @current_tag[0..2]==['yomeRoot','gachaList','gachaInfo'] && ['gachaId','gachaName'].find{|e|e==@current_tag[3]}
 			@content['gacha-'+@current_tag[3]]<<text.split('#')[0]
 		end
+		if @current_tag[0..2]==['yomeRoot','actionList','actionInfo'] && ['actionName'].find{|e|e==@current_tag[3]}
+			@current_action=text
+		end
+		if @current_tag[0..6]==['yomeRoot','actionList','actionInfo','actTalkList','actTalkMoodInfo','actTalkInfoList','actTalkInfo'] && ['talkText'].find{|e|e==@current_tag[7]}
+			@actionList[@current_action]<<text
+		end
+		if @current_tag[0..6]==['yomeRoot','actionList','actionInfo','actTalkList','actTalkMoodInfo','actTalkInfoList','actTalkInfo'] && ['voiceFile'].find{|e|e==@current_tag[7]}
+			@actionVoiceList[@current_action]<<text
+		end
+		if @current_tag[0..2]==['yomeRoot','itemList','itemInfo'] && ['itemId','reactionText'].find{|e|e==@current_tag[3]}
+			@content['item-'+@current_tag[3]]<<text
+		end
+		if @current_tag[0..2]==['yomeRoot','present4YomeList','present4YomeInfo'] && ['itemId'].find{|e|e==@current_tag[3]}
+			str=@current_tag[3]
+			str='reactionText' if str=='talkText'
+			@content['item-'+str]<<text
+		end
+		if @current_tag[0..3]==['yomeRoot','present4YomeList','present4YomeInfo','presentTalkInfo'] && ['talkText'].find{|e|e==@current_tag[4]}
+			str=@current_tag[4]
+			str='reactionText' if str=='talkText'
+			@content['item-'+str]<<text
+		end
 	end
 	alias_method :on_cdata_block, :cdata
 	def text(text)
@@ -94,6 +127,7 @@ case SAX
 end
 
 gachas=Hash[*listener.content['gacha-gachaId'].zip(listener.content['gacha-gachaName']).flatten]
+itemList=listener.content['item-itemId'].zip(listener.content['item-reactionText'])
 voiceList=listener.content['voice-voiceId'].map(&:to_i).zip(listener.content['voice-voiceFile'],listener.content['voice-text'],listener.content['voice-cardId'].map(&:to_i))
 voiceList2=Hash.new{|h,k|h[k]=[]}
 voiceList.sort_by{|e|e[0]}.each{|e|
@@ -101,7 +135,23 @@ voiceList.sort_by{|e|e[0]}.each{|e|
 }
 cardList=listener.content['card-cardId'].map(&:to_i).zip(listener.content['card-cardName'],listener.content['card-file'])
 
+listener.actionList.each{|k,v|
+	puts "**#{k}"
+	#if listener.actionVoiceList[k].length==0
+		puts v.uniq.join("\n")
+	#end
+	puts
+}
+
+puts '**イベントアイテム・記念日'
+itemList.sort_by{|e|e[0]}.each{|e|
+	item=items[e[0]]
+	item=['',''] if !item
+	puts '|'+(item+[e[1]]).join('|')+"|\n"
+}
+
 print <<EOM
+
 &bold(){カード数#{cardList.size}　ボイス数#{voiceList.size}}
 
 EOM
