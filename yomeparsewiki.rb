@@ -4,7 +4,21 @@
 #ruby yomeparse.rb < conf/yome_data_N.xml > N.html
 
 require 'cgi'
-ID='loeb'
+if ARGV.size<2
+	puts "yomeparsewiki.rb conf/yome_data_N.xml picture_prefix"
+	exit
+end
+ID=ARGV[1]
+
+m={
+	'なでる'=>'なでた時のコメント',
+	'超なでる'=>'超なでた時のコメント',
+	'キス'=>'キスした時のコメント',
+	'超キス'=>'超キスした時のコメント',
+	'アラーム'=>'起こしてもらう時の反応',
+	'話しかける'=>'話しかけた時の反応',
+	'話しかける（テキスト）'=>'話しかけた時の反応',
+}
 
 SAX=2
 case SAX
@@ -45,7 +59,8 @@ open(File.dirname(__FILE__)+'/itemlist.csv'){|f|
 
 gachas={}
 
-body=ARGF.read
+body=''
+open(ARGV[0]){|f|body=f.read}
 
 class YomeListener
 	case SAX
@@ -142,19 +157,23 @@ voiceList.sort_by{|e|e[0]}.each{|e|
 }
 cardList=listener.content['card-cardId'].map(&:to_i).zip(listener.content['card-cardName'],listener.content['card-file'])
 
+#need to parse yomelist
+#puts "**求婚PR"
+
 listener.actionList.each{|k,v|
-	puts "**#{k}"
+	puts "**#{m[k]}"
 	#if listener.actionVoiceList[k].length==0
 		puts '|「'+v.uniq.join("」|\n|「")+'」|'
 	#end
 	puts
 }
 
-puts '**イベントアイテム・記念日'
+puts '**イベントアイテム・記念日のアイテムをプレゼントした時のコメント'
 itemList.sort_by{|e|e[0]}.each{|e|
 	item=items[e[0]]
-	item=[e[0],''] if !item
-	puts '|'+item.join('|')+'|「'+e[1]+"」|\n"
+	item=['',e[0]] if !item
+	voice=e[1].gsub('%month%','○').gsub('%nickname%','○○')
+	puts '|'+item.join('|')+'|「'+voice+"」|\n"
 }
 
 print <<EOM
