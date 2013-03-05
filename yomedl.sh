@@ -13,7 +13,7 @@ export userId=0000
 export uid=abcdef
 
 if [ $# -ne 2 ]; then
-	echo sh yomedlidol.sh N group(usually 1)
+	echo "sh yomedlidol.sh N group(usually 1)"
 	exit 1
 fi
 
