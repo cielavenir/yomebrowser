@@ -1,25 +1,30 @@
 #include <stdio.h>
+#include <string.h>
 #include <unistd.h>
 #include "rijndael.h"
+#include "sha1.h"
 
 typedef unsigned char  u8;
 #define BUFLEN 65536
 u8 buf[BUFLEN];
+#define cbuf ((char*)buf)
 
 #define KEYBITS 128
 
 int main(const int argc, const char **argv){
-	if(isatty(fileno(stdin))&&argc<2){
+	//if(isatty(fileno(stdin))&&argc<2){
+	if(argc<2){
 		fprintf(stderr,
 			"[IMEI->uid]\n"
 			"getyomecolleuid [IMEI]\n"
-			"[uid->IMEI]\n"
-			"echo [uid]|xenobase16 -d|getyomecolleuid|fcutdown - 16\n"
+			//"[uid->IMEI]\n"
+			//"echo [uid]|base16 -d|getyomecolleuid\n"
+			"uid->IMEI convertion is now removed due to SHA1 hashing.\n"
 		);return -1;
 	}
 	unsigned int rk[RKLENGTH(KEYBITS)];
 	//unsigned char key[KEYLENGTH(KEYBITS)];
-	u8 tmp[16];
+	//u8 tmp[16];
 	int i;
 	int nrounds;
 
@@ -35,6 +40,7 @@ int main(const int argc, const char **argv){
 	u8 iv[16];
 	memcpy(iv,(u8*)"NEBIGVoice08Zero",16);
 
+#if 0
 	if(argc<2){ //decrypt
 		fread(buf,1,16,stdin);
 		for(;;){
@@ -60,7 +66,21 @@ int main(const int argc, const char **argv){
 		}
 		if(isatty(fileno(stdout)))puts("");
 	}else{
+#endif
 		memcpy(buf,"0000000000000000",16);
+		struct sha1_ctxt sha1ctx;
+		unsigned char *digest=buf+56;
+		sha1_init(&sha1ctx);
+		sha1_loop(&sha1ctx,(unsigned char*)arg,strlen(arg));
+		sha1_result(&sha1ctx,digest);
+		int j=0;
+		for(;j<20;j++){
+			int x=digest[j]>>4,y=digest[j]&0xf;
+			buf[16+2*j+0]=x>9?(x-10+'a'):(x+'0');
+			buf[16+2*j+1]=y>9?(y-10+'a'):(y+'0');
+		}
+		buf[56]=0;
+/*
 		for(i=0;i<16;i++)buf[i]^=iv[i];
 		rijndaelEncrypt(rk, nrounds, buf, buf);
 		for(i=0;i<16;i++){
@@ -69,11 +89,11 @@ int main(const int argc, const char **argv){
 			fputc(y<10?(y+'0'):(y-10+'a'),stdout);
 		}
 		memcpy(iv,buf,16);
-
+*/
 		for(c=0;;c+=16){
-			int readlen=strlen(arg+c);
+			int readlen=strlen(cbuf+c);
 			if(readlen>16)readlen=16;
-			memcpy(buf,arg+c,readlen);
+			memcpy(buf,buf+c,readlen);
 			//if(readlen<0)break;
 			if(readlen<16){ //process PKCS7 padding
 				if(readlen==0)readlen=16;
@@ -97,6 +117,6 @@ int main(const int argc, const char **argv){
 			memcpy(iv,buf,16);
 		}
 		if(isatty(fileno(stdout)))puts("");
-	}
+	//}
 	return 0;
 }
