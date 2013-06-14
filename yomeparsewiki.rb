@@ -2,6 +2,7 @@
 #coding: utf-8
 #YomeBrowser Parser
 #ruby yomeparse.rb < conf/yome_data_N.xml > N.html
+require 'multisax'
 
 require 'cgi'
 if ARGV.size<2
@@ -15,32 +16,12 @@ m={
 	'超なでる'=>'超なでた時のコメント',
 	'キス'=>'キスした時のコメント',
 	'超キス'=>'超キスした時のコメント',
+	'ツンツン'=>'ツンツンした時のコメント',
+	'超ツンツン'=>'超ツンツンした時のコメント',
 	'アラーム'=>'起こしてもらう時の反応',
 	'話しかける'=>'話しかけた時の反応',
 	'話しかける（テキスト）'=>'話しかけた時の反応',
 }
-
-SAX=2
-case SAX
-	when 0
-		require 'rexml/document'
-		require 'rexml/parsers/streamparser' 
-		require 'rexml/streamlistener'
-	when 1
-		require 'rexml/document'
-		require 'rexml/parsers/sax2parser'
-		require 'rexml/sax2listener'
-	when 2
-		begin
-			require 'libxml'
-		rescue LoadError
-			puts 'Falling back to REXML. Please: gem install libxml-ruby'
-			SAX=0
-			require 'rexml/document'
-			require 'rexml/parsers/streamparser' 
-			require 'rexml/streamlistener'
-		end
-end
 
 levels={}
 open(File.dirname(__FILE__)+'/level.csv'){|f|
@@ -57,20 +38,9 @@ open(File.dirname(__FILE__)+'/itemlist.csv'){|f|
 	}
 }
 
-gachas={}
-
-body=''
-open(ARGV[0]){|f|body=f.read}
-
-class YomeListener
-	case SAX
-		when 0 then include REXML::StreamListener
-		when 1 then include REXML::SAX2Listener
-		when 2 then include LibXML::XML::SaxParser::Callbacks
-	end
-
+listener=MultiSAX::Sax.parse(File.read(ARGV[0]),Class.new{
+	include MultiSAX::Callbacks
 	def initialize
-		super
 		@content=Hash.new{|h,k|h[k]=[]}
 		@actionList=Hash.new{|h,k|h[k]=[]}
 		@actionVoiceList=Hash.new{|h,k|h[k]=[]}
@@ -79,17 +49,13 @@ class YomeListener
 	end
 	attr_reader :content, :actionList, :actionVoiceList
 
-	def tag_start(tag,attrs)
+	def sax_tag_start(tag,attrs)
 		@current_tag.push(tag)
 	end
-	def start_element(uri,tag,qname,attrs) tag_start(tag,attrs) end
-	alias_method :on_start_element, :tag_start
-	def tag_end(tag)
+	def sax_tag_end(tag)
 		if (t=@current_tag.pop)!=tag then raise "xml is malformed /#{t}" end
 	end
-	def end_element(uri,tag,qname) tag_end(tag) end
-	alias_method :on_end_element, :tag_end
-	def cdata(text)
+	def sax_cdata(text)
 		if @current_tag.length==2 && ['yomeId','name','actorName','titleName'].find{|e|e==@current_tag[1]}
 			@content[@current_tag[1]]=text
 		end
@@ -131,21 +97,7 @@ class YomeListener
 			@content['story-'+@current_tag[3]]<<text
 		end
 	end
-	alias_method :on_cdata_block, :cdata
-	def text(text)
-	end
-	def characters(text) text(text) end
-	alias_method :characters, :text
-	alias_method :on_characters, :text
-end
-
-
-listener=YomeListener.new
-case SAX
-	when 0 then REXML::Parsers::StreamParser.new(body,listener).parse
-	when 1 then parser=REXML::Parsers::SAX2Parser.new(body);parser.listen(listener);parser.parse
-	when 2 then parser=LibXML::XML::SaxParser.string(body);parser.callbacks=listener;parser.parse
-end
+}.new)
 
 gachas=Hash[*listener.content['gacha-gachaId'].zip(listener.content['gacha-gachaName']).flatten]
 itemList=listener.content['item-itemId'].zip(listener.content['item-reactionText'])
