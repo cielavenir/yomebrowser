@@ -2,6 +2,7 @@
 #coding: utf-8
 #YomeBrowser Parser
 #ruby yomeparse.rb < conf/yome_data_N.xml > N.html
+require 'rubygems'
 require 'multisax'
 
 require 'cgi'
@@ -38,7 +39,7 @@ open(File.dirname(__FILE__)+'/itemlist.csv'){|f|
 	}
 }
 
-listener=MultiSAX::Sax.parse(File.read(ARGV[0]),Class.new{
+listener=MultiSAX::Sax.parsefile(ARGV[0],Class.new{
 	include MultiSAX::Callbacks
 	def initialize
 		@content=Hash.new{|h,k|h[k]=[]}

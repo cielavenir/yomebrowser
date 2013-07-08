@@ -6,6 +6,7 @@ NUMBER=25
 #1=iPhone 2=Android
 TERMINALKIND=2
 
+require 'rubygems'
 require 'net/https'
 require 'uri'
 require 'multisax'
@@ -37,9 +38,11 @@ listener=MultiSAX::Sax.parse(body,Class.new{
 
 	def sax_tag_start(tag,attrs)
 		@current_tag.push(tag)
+		@grouplist=[] if tag=='cardGroupList'
 	end
 	def sax_tag_end(tag)
 		if (t=@current_tag.pop)!=tag then raise "xml is malformed /#{t}" end
+		@content['cardGroupList']<<@grouplist if tag=='cardGroupList'
 	end
 	def sax_cdata(text)
 		if @current_tag[0..2]==['yomeRoot','yomeList','yomeInfo'] && ['name','actorName','titleName'].find{|e|e==@current_tag[3]}
@@ -50,10 +53,13 @@ listener=MultiSAX::Sax.parse(body,Class.new{
 		if @current_tag[0..2]==['yomeRoot','yomeList','yomeInfo'] && ['yomeId'].find{|e|e==@current_tag[3]}
 			@content[@current_tag[3]] << text
 		end
+		if @current_tag.last=='cardGroupId'
+			@grouplist<<text
+		end
 	end
 }.new)
-yomeList=listener.content['yomeId'].map(&:to_i).zip(listener.content['name'],listener.content['titleName'])
+yomeList=listener.content['yomeId'].map(&:to_i).zip(listener.content['name'],listener.content['titleName'],listener.content['cardGroupList'].map{|e|e.sort*','})
 yomeList.sort_by{|e|e[0]}.each{|e|
-	puts "#{e[0]}\t#{e[1]}\t[#{e[2]}]"
+	puts "#{e[0]} (#{e[3]})\t#{e[1]}\t[#{e[2]}]"
 }
 
