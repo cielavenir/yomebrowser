@@ -94,6 +94,7 @@ cardList=listener.content['card-cardId'].map(&:to_i).zip(listener.content['card-
 print <<EOM
 <!DOCTYPE html>
 <html><head>
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
 <title>YomeBrowser #{listener.content['name']}</title>
 </head><body>
 <p>
@@ -133,9 +134,9 @@ print <<EOM
 <table border="1" style="border-collapse:collapse;">
 EOM
 cardList.sort_by{|e|e[0]}.each{|e|
-	puts %Q(<tr><td valign="top">#{e[0]}: #{e[1]}<br><img src="#{e[2]}" /></td><td>)
+	puts %Q(<tr><td style="vertical-align:top">#{e[0]}: #{e[1]}<br><img src="#{e[2]}" alt="#{e[1]}"></td><td>)
 	voiceList2[e[0]].each{|e0|
-		puts %Q(#{e0[0]}: #{e0[2]}<br><audio controls><source src="#{e0[1]}" /></audio><br>)
+		puts %Q(#{e0[0]}: #{e0[2]}<br><audio controls><source src="#{e0[1]}"></audio><br>)
 	}
 	puts storyList[e[0]].gsub("\n\n","\n").gsub("\n\n","\n").gsub("\n",'<br>') if storyList[e[0]]
 	puts "</td></tr>"
