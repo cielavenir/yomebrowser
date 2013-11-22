@@ -13,7 +13,7 @@ export userId=0000
 export uid=abcdef
 
 if [ $# -ne 2 ]; then
-	echo "sh yomedl.sh N group(usually 1)"
+	echo "sh yomedlidol.sh N group(usually 1)"
 	echo "Note: You must have at least one vacancy."
 	echo "Also, please never specify yome you are adding to application, or your progress will be lost completely."
 	puts "If so, you can dump yome data from your mobile."

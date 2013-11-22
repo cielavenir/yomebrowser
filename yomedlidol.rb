@@ -11,7 +11,7 @@ require 'net/https'
 load File.expand_path(File.dirname(__FILE__)+'/yomedlidol.conf')
 
 if ARGV.size<2
-	puts 'yomedl.ruby N group(usually 1)'
+	puts 'yomedlidol.rb N group(usually 1)'
 	puts 'Note: You must have at least one vacancy.
 	puts 'Also, please never specify yome you are adding to application, or your progress will be lost completely.'
 	puts 'If so, you can dump yome data from your mobile.'
