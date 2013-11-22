@@ -1,0 +1,5 @@
+#check using password recovery screen
+USERID=0000
+#iPhone: packet dump
+#Android: use getyomecolleuid
+UID=abcdef

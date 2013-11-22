@@ -17,7 +17,7 @@ https = Net::HTTP.new(uri.host,443)
 https.use_ssl = true
 https.start{
 	https.request_get(uri.path+'?'+uri.query,{
-		'Accept'=>'*/*',"User-Agent"=>"YomeColle"
+		'Accept'=>'*/*','User-Agent'=>'YomeColle'
 	}){|response|
 		response.read_body{|str|
 			body << str

@@ -7,7 +7,7 @@ require 'multisax'
 
 require 'cgi'
 if ARGV.size<2
-	puts "yomeparsewiki.rb conf/yome_data_N.xml picture_prefix"
+	puts 'yomeparsewiki.rb conf/yome_data_N.xml picture_prefix'
 	exit
 end
 ID=ARGV[1]
