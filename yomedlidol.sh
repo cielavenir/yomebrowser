@@ -16,7 +16,7 @@ if [ $# -ne 2 ]; then
 	echo "sh yomedlidol.sh N group(usually 1)"
 	echo "Note: You must have at least one vacancy."
 	echo "Also, please never specify yome you are adding to application, or your progress will be lost completely."
-	puts "If so, you can dump yome data from your mobile."
+	echo "If so, you can dump yome data from your mobile."
 	exit 1
 fi
 
