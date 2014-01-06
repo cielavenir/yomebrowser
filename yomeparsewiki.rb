@@ -57,44 +57,44 @@ listener=MultiSAX::Sax.parsefile(ARGV[0],Class.new{
 		if (t=@current_tag.pop)!=tag then raise "xml is malformed /#{t}" end
 	end
 	def sax_cdata(text)
-		if @current_tag.length==2 && ['yomeId','name','actorName','titleName'].find{|e|e==@current_tag[1]}
+		if @current_tag.length==2 && ['yomeId','name','actorName','titleName'].include?(@current_tag[1])
 			@content[@current_tag[1]]=text
 		end
-		if @current_tag[0..2]==['yomeRoot','cardList','cardInfo'] && ['cardId','cardName','file','gachaId','level'].find{|e|e==@current_tag[3]}
+		if @current_tag[0..2]==['yomeRoot','cardList','cardInfo'] && ['cardId','cardName','file','gachaId','level'].include?(@current_tag[3])
 			@content['card-'+@current_tag[3]]<<text
 		end
-		if @current_tag[0..3]==['yomeRoot','cardList','cardInfo','changeImg'] && ['file'].find{|e|e==@current_tag[4]}
+		if @current_tag[0..3]==['yomeRoot','cardList','cardInfo','changeImg'] && ['file'].include?(@current_tag[4])
 			@content['cardchg-'+@current_tag[4]]<<text
 		end
-		if @current_tag[0..2]==['yomeRoot','voiceList','voiceInfo'] && ['voiceId','voiceFile','text','cardId'].find{|e|e==@current_tag[3]}
+		if @current_tag[0..2]==['yomeRoot','voiceList','voiceInfo'] && ['voiceId','voiceFile','text','cardId'].include?(@current_tag[3])
 			@content['voice-'+@current_tag[3]]<<text
 		end
-		if @current_tag[0..2]==['yomeRoot','gachaList','gachaInfo'] && ['gachaId','gachaName'].find{|e|e==@current_tag[3]}
+		if @current_tag[0..2]==['yomeRoot','gachaList','gachaInfo'] && ['gachaId','gachaName'].include?(@current_tag[3])
 			@content['gacha-'+@current_tag[3]]<<text.split('#')[0]
 		end
-		if @current_tag[0..2]==['yomeRoot','actionList','actionInfo'] && ['actionName'].find{|e|e==@current_tag[3]}
+		if @current_tag[0..2]==['yomeRoot','actionList','actionInfo'] && ['actionName'].include?(@current_tag[3])
 			@current_action=text
 		end
-		if @current_tag[0..6]==['yomeRoot','actionList','actionInfo','actTalkList','actTalkMoodInfo','actTalkInfoList','actTalkInfo'] && ['talkText'].find{|e|e==@current_tag[7]}
+		if @current_tag[0..6]==['yomeRoot','actionList','actionInfo','actTalkList','actTalkMoodInfo','actTalkInfoList','actTalkInfo'] && ['talkText'].include?(@current_tag[7])
 			@actionList[@current_action]<<text
 		end
-		if @current_tag[0..6]==['yomeRoot','actionList','actionInfo','actTalkList','actTalkMoodInfo','actTalkInfoList','actTalkInfo'] && ['voiceFile'].find{|e|e==@current_tag[7]}
+		if @current_tag[0..6]==['yomeRoot','actionList','actionInfo','actTalkList','actTalkMoodInfo','actTalkInfoList','actTalkInfo'] && ['voiceFile'].include?(@current_tag[7])
 			@actionVoiceList[@current_action]<<text
 		end
-		if @current_tag[0..2]==['yomeRoot','itemList','itemInfo'] && ['itemId','reactionText'].find{|e|e==@current_tag[3]}
+		if @current_tag[0..2]==['yomeRoot','itemList','itemInfo'] && ['itemId','reactionText'].include?(@current_tag[3])
 			@content['item-'+@current_tag[3]]<<text
 		end
-		if @current_tag[0..2]==['yomeRoot','present4YomeList','present4YomeInfo'] && ['itemId'].find{|e|e==@current_tag[3]}
+		if @current_tag[0..2]==['yomeRoot','present4YomeList','present4YomeInfo'] && ['itemId'].include?(@current_tag[3])
 			str=@current_tag[3]
 			str='reactionText' if str=='talkText'
 			@content['item-'+str]<<text
 		end
-		if @current_tag[0..3]==['yomeRoot','present4YomeList','present4YomeInfo','presentTalkInfo'] && ['talkText'].find{|e|e==@current_tag[4]}
+		if @current_tag[0..3]==['yomeRoot','present4YomeList','present4YomeInfo','presentTalkInfo'] && ['talkText'].include?(@current_tag[4])
 			str=@current_tag[4]
 			str='reactionText' if str=='talkText'
 			@content['item-'+str]<<text
 		end
-		if @current_tag[0..2]==['yomeRoot','storyList','storyInfo'] && ['cardId','text'].find{|e|e==@current_tag[3]}
+		if @current_tag[0..2]==['yomeRoot','storyList','storyInfo'] && ['cardId','text'].include?(@current_tag[3])
 			@content['story-'+@current_tag[3]]<<text
 		end
 	end

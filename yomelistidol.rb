@@ -45,12 +45,12 @@ listener=MultiSAX::Sax.parse(body,Class.new{
 		@content['cardGroupList']<<@grouplist if tag=='cardGroupList'
 	end
 	def sax_cdata(text)
-		if @current_tag[0..2]==['yomeRoot','yomeList','yomeInfo'] && ['name','actorName','titleName'].find{|e|e==@current_tag[3]}
+		if @current_tag[0..2]==['yomeRoot','yomeList','yomeInfo'] && ['name','actorName','titleName'].include?(@current_tag[3])
 			@content[@current_tag[3]] << text
 		end
 	end
 	def sax_text(text)
-		if @current_tag[0..2]==['yomeRoot','yomeList','yomeInfo'] && ['yomeId'].find{|e|e==@current_tag[3]}
+		if @current_tag[0..2]==['yomeRoot','yomeList','yomeInfo'] && ['yomeId'].include?(@current_tag[3])
 			@content[@current_tag[3]] << text
 		end
 		if @current_tag.last=='cardGroupId'
