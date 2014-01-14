@@ -6,11 +6,8 @@ export number=28
 #1=iPhone 2=Android
 export terminalKind=2
 
-#check using password recovery screen
-export userId=0000
-#iPhone: packet dump
-#Android: use getyomecolleuid
-export uid=abcdef
+DIR="`dirname "$0"`"
+eval `sed -e '/^#/d' -e 's/UID=/export uid=/' -e 's/USERID=/export userId=/' "${DIR}/yomedlidol.conf"`
 
 if [ $# -ne 2 ]; then
 	echo "sh yomedlidol.sh N group(usually 1)"

@@ -24,20 +24,26 @@ destarc=yomeId+'_'+cardGroupId+'.zip'
 File.open(destarc,'wb'){|f|
 	https = Net::HTTP.new('anime.biglobe.ne.jp',443)
 	https.use_ssl = true
+	#https.verify_mode = OpenSSL::SSL::VERIFY_PEER
 	https.start{
 		puts 'Downloading...'
 
 		https.request_get("/api/yome/#{NUMBER}/download/getYomeData.php?userId=#{USERID}&yomeId=#{yomeId}&uid=#{UID}&cardGroupId=#{cardGroupId}&terminalKind=#{TERMINALKIND}",{
 			'Accept'=>'*/*','User-Agent'=>'YomeColle'
 		}){|response|
+			read_size=0
 			response.read_body{|str|
 				f << str
-				STDERR.printf("%d\r",f.size)
+				STDERR.printf("%d\r",read_size+=str.size)
 			}
 		}
 
 		puts
-		sleep(2)
+	}
+	sleep(2)
+
+	#Actually these two should be different connections.
+	https.start{
 		puts 'Unregistering...'
 
 		body=https.post("/api/yome/#{NUMBER}/user/deleteYomeInfo.php","userId=#{USERID}&yomeId=#{yomeId}&uid=#{UID}&terminalKind=#{TERMINALKIND}",{
@@ -49,11 +55,9 @@ File.open(destarc,'wb'){|f|
 			body=~/^\<description\>\<!\[CDATA\[(.+)\]\]\>\<\/description\>$/
 			puts 'Error: '+$1
 		end
-
-		sleep(1)
 	}
+	sleep(1)
 }
 begin
 	File.unlink(destarc) if FileTest.size(destarc)<1000
 rescue; end
-
