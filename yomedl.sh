@@ -2,7 +2,7 @@
 #YomeBrowser Downloader
 
 #server number
-export number=28
+export number=30
 #1=iPhone 2=Android
 export terminalKind=2
 

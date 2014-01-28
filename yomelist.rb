@@ -2,7 +2,7 @@
 #YomeBrowser Lister
 
 #server number
-NUMBER=28
+NUMBER=30
 #1=iPhone 2=Android
 TERMINALKIND=2
 
