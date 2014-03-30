@@ -38,7 +38,7 @@ File.open(destarc,'wb'){|f|
 			}
 		}
 
-		puts
+		STDERR.puts
 	}
 	sleep(2)
 
