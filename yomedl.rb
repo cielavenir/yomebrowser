@@ -22,7 +22,7 @@ cardGroupId=ARGV[1]
 destarc=yomeId+'_'+cardGroupId+'.zip'
 
 File.open(destarc,'wb'){|f|
-	https = Net::HTTP.new('anime.biglobe.ne.jp',443)
+	https = Net::HTTP.new('yomecolle.jp',443)
 	https.use_ssl = true
 	#https.verify_mode = OpenSSL::SSL::VERIFY_PEER
 	https.start{

@@ -17,7 +17,7 @@ if [ $# -ne 2 ]; then
 	exit 1
 fi
 
-wget -O $1_$2.zip -U YomeColle "https://anime.biglobe.ne.jp/api/yome/$number/download/getYomeData.php?userId=$userId&yomeId=$1&uid=$uid&cardGroupId=$2&terminalKind=$terminalKind"
+wget -O $1_$2.zip -U YomeColle "https://yomecolle.jp/api/yome/$number/download/getYomeData.php?userId=$userId&yomeId=$1&uid=$uid&cardGroupId=$2&terminalKind=$terminalKind"
 sleep 2
-wget -O - -U YomeColle --post-data "userId=$userId&yomeId=$1&uid=$uid&terminalKind=$terminalKind" "http://anime.biglobe.ne.jp/api/yome/$number/user/deleteYomeInfo.php"
+wget -O - -U YomeColle --post-data "userId=$userId&yomeId=$1&uid=$uid&terminalKind=$terminalKind" "http://yomecolle.jp/api/yome/$number/user/deleteYomeInfo.php"
 sleep 1

@@ -18,10 +18,13 @@ Find.find(source){|path|
 	elsif path.end_with?('.csv')||path.end_with?('.xml')
 		FileUtils.copy(path,newpath)
 	else
-		File.open(path,'rb'){|f|
-			File.write(newpath,f.each_byte.with_index.map{|e,i|
+		File.open(path,'rb'){|fin|
+			str=fin.each_byte.with_index.map{|e,i|
 					e^(i%0x7f+0x80)
-			}.pack('C*'))
+			}.pack('C*')
+			File.open(newpath,'wb'){|fout|
+				fout.write(str)
+			}
 		}
 	end
 }

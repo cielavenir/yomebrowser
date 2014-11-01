@@ -10,7 +10,7 @@ require 'rubygems'
 require 'net/https'
 require 'uri'
 require 'multisax'
-uri=URI.parse("https://anime.biglobe.ne.jp/api/yome/#{NUMBER}/firstRun/getYomeList.php?terminalKind=#{TERMINALKIND}")
+uri=URI.parse("https://yomecolle.jp/api/yome/#{NUMBER}/firstRun/getYomeList.php?terminalKind=#{TERMINALKIND}")
 
 body=''
 https = Net::HTTP.new(uri.host,443)
