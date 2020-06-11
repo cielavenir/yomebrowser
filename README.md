@@ -11,6 +11,7 @@ yomebrowser project is now over.
 - archive is usual zip.
 - internal files are encrypted.
   - xored by (i%0x7f+0x80), where i is the file offset (0-indexed).
+  - disclaimer: I found this formula on 20110926, but I did not publish the decrypter (to Internet) until ANOTHER person posted it to applism/1334010203/864 on 20120420.
 
 ### uid
 #### Android
